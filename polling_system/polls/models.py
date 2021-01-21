@@ -8,7 +8,7 @@ User = get_user_model()
 class Poll(models.Model):
     name = models.CharField(max_length=255)
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='polls')
-    description = models.TextField()
+    description = models.TextField(blank=True)
     start_date = models.DateField(auto_now_add=True)
     finish_date = models.DateField()
 
