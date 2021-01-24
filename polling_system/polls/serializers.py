@@ -10,13 +10,15 @@ class VoteSerializer(serializers.ModelSerializer):
 
 
 class ChoiceSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Choice
         fields = '__all__'
+        extra_kwargs = {'question': {'required': False}}
 
 
 class QuestionSerializer(serializers.ModelSerializer):
-    choices = ChoiceSerializer(many=True, read_only=True)
+    choices = ChoiceSerializer(many=True)
 
     class Meta:
         model = Question
