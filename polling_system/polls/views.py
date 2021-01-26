@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from rest_framework.views import APIView
+from rest_framework.generics import CreateAPIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.exceptions import PermissionDenied
 from django.contrib.auth import authenticate
@@ -8,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
-from .serializers import PollSerializer, QuestionSerializer, ChoiceSerializer
+from .serializers import PollSerializer, QuestionSerializer, ChoiceSerializer, VoteSerializer
 from .models import Poll, Question, Choice
 
 
@@ -122,4 +123,26 @@ class LoginView(APIView):
             return Response({'token': user.auth_token.key})
         else:
             return Response({'error': 'Wrong credentials'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class VoteView(CreateAPIView):
+    serializer_class = VoteSerializer
+    permission_classes = ()
+    authentication_classes = ()
+
+    def create(self, request, *args, **kwargs):
+        question = Question.objects.get(pk=self.kwargs['question_pk'])
+        answer = request.data.get('answer')
+        print(question)
+        if question.question_type == 'free':
+            return super().create(request, *args, **kwargs)
+        elif question.question_type == 'one':
+            if answer in question.choices:
+                return super().create(request, *args, **kwargs)
+            else:
+                return Response({'error': 'Wrong answer. Please choose a variant from the suggested.'},
+                                status=status.HTTP_400_BAD_REQUEST)
+        else:
+            pass
+
 

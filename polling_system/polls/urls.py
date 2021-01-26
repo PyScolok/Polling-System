@@ -2,7 +2,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from rest_framework_nested import routers
 
-from .views import PollsViewSet, QuestionsViewSet, ChoicesViewSet, LoginView
+from .views import PollsViewSet, QuestionsViewSet, ChoicesViewSet, LoginView, VoteView
 
 
 router = DefaultRouter()
@@ -18,6 +18,7 @@ urlpatterns = [
     path('', include(router.urls)),
     path('', include(questions_router.urls)),
     path('', include(choices_router.urls)),
+    path('polls/<int:poll_pk>/questions/<int:question_pk>/vote/', VoteView.as_view(), name='vote'),
     path('login/', LoginView.as_view(), name='login')
 ]
 

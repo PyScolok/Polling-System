@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.contrib.postgres.fields import ArrayField
 
 
 User = get_user_model()
@@ -40,9 +41,9 @@ class Choice(models.Model):
 
 
 class Vote(models.Model):
-    respondent_id = models.PositiveIntegerField()
+    respondent_id = models.PositiveIntegerField(unique=True)
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='votes')
-    answer = models.CharField(max_length=255)
+    answer = ArrayField(models.CharField(max_length=255))
 
     def __str__(self):
         return self.answer
