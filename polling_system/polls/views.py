@@ -133,16 +133,20 @@ class VoteView(CreateAPIView):
     def create(self, request, *args, **kwargs):
         question = Question.objects.get(pk=self.kwargs['question_pk'])
         answer = request.data.get('answer')
-        print(question)
+        choices = [choice.choice_text for choice in question.choices.all()]
         if question.question_type == 'free':
             return super().create(request, *args, **kwargs)
         elif question.question_type == 'one':
-            if answer in question.choices:
+            if answer[0] in choices:
                 return super().create(request, *args, **kwargs)
             else:
                 return Response({'error': 'Wrong answer. Please choose a variant from the suggested.'},
                                 status=status.HTTP_400_BAD_REQUEST)
         else:
-            pass
+            if set(answer) <= set(choices):
+                return super().create(request, *args, **kwargs)
+            else:
+                return Response({'error': 'Wrong answer. Please choose a variant from the suggested.'},
+                                status=status.HTTP_400_BAD_REQUEST)
 
 
