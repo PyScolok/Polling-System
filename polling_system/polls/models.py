@@ -46,7 +46,7 @@ class Vote(models.Model):
     answer = ArrayField(models.CharField(max_length=255))
 
     def __str__(self):
-        return self.answer
+        return f'Answer from respondent {self.respondent_id} to question {self.question}'
 
     class Meta:
         constraints = [

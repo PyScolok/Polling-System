@@ -10,7 +10,7 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from .serializers import PollSerializer, QuestionSerializer, ChoiceSerializer, VoteSerializer
-from .models import Poll, Question, Choice
+from .models import Poll, Question, Choice, Vote
 
 
 class PollsViewSet(ModelViewSet):
@@ -150,3 +150,15 @@ class VoteView(CreateAPIView):
                                 status=status.HTTP_400_BAD_REQUEST)
 
 
+class CompletePollsView(APIView):
+    permission_classes = ()
+    authentication_classes = ()
+
+    def get(self, request, poll_pk, respondent_id):
+        poll = Poll.objects.get(pk=poll_pk)
+        votes = Vote.objects.filter(question__poll=poll)
+        votes = votes.filter(respondent_id=respondent_id)
+        poll_serializer = PollSerializer(poll)
+        votes_serializer = VoteSerializer(votes, many=True)
+        return Response({'poll': poll_serializer.data,
+                         'votes': votes_serializer.data})
